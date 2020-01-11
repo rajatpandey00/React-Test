@@ -1,7 +1,7 @@
 //entry --> output
 const path  = require('path')
 
-module.exports= {
+module.exports = {
  entry: './src/app.js',
  output: {
    path: path.join(__dirname, 'public'),  //path to the bundle of the output file
@@ -13,5 +13,6 @@ module.exports= {
       test: /\.js$/,
       exclude: /node_modules/
     }]
-  }
+  },
+  mode: 'development'
 }
