@@ -1,47 +1,52 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
-import Bars from 'react-bars';
+import Form from './components/Form'
+import ProgressBar from './components/Bars'
+import createdLabelDataForBar from './utils/utils'
+import './styles/progress-bar.scss'
 
 class BarExample extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            testData: [
-                { label: '75%', value: 75, barColor: 'cyan' },
-                { label: '25%', value: 25, barColor: 'grey' }
-            ],
-            optionsSelected: 1,
-        };
-        this.handleValue = this.handleValue.bind(this)
-        this.handleSelect = this.handleSelect.bind(this)
+    state = {
+        bars: createdLabelDataForBar([44, 13, 68]), // This value later can be fetched via api
+        buttons: [39, 35, -22, -43],
+        optionsSelected: 1,
+        limitReceived: 190
+    };
+
+    handleSelect = e => {
+        e.preventDefault()
+        this.setState({ optionsSelected: e.target.value })
     }
-    handleSelect(e) {
-      e.preventDefault()
-      this.setState({ optionsSelected: e.target.value })
-    }
-    handleValue(text) {
-        const indexToUpdate = this.state.optionsSelected
-        console.log('indexToUpdate', indexToUpdate-1)
-        const updateValue = this.state.testData[indexToUpdate -1 ].value + text
-        console.log('updateValue', updateValue)
-         const color = (updateValue >= 100) ? 'red' : 'cyan'
-        this.setState(prevState => ({
-              [prevState.testData[indexToUpdate-1]]: updateValue
-        }))
-        console.log('State', this.state)
+
+    handleValue = text => {
+        const { optionsSelected, bars, limitReceived } = this.state
+        const indexToUpdate = optionsSelected - 1
+        const updateValue = bars[indexToUpdate].value + text
+        const color = (updateValue >= limitReceived) ? 'red' : 'cyan'
+        this.setState(prevState => {
+            const { bars } = prevState
+            const updatedObj = {
+                label: `${updateValue}%`,
+                value: updateValue,
+                barColor: `${color}`
+            }
+            const updatedObjects = [
+                ...bars.slice(0, indexToUpdate),
+                updatedObj,
+                ...bars.slice(indexToUpdate + 1),
+            ]
+            return {
+                bars: [...updatedObjects]
+            }
+        })
     }
     render() {
-        const { testData } = this.state
+        const { bars, buttons, limitReceived } = this.state
         return (
             <div>
-                <Bars data={testData} />
-                <select onChange={this.handleSelect}>
-                    <option value="1">Progress#1</option>
-                    <option value="2">Progress#2</option>
-                </select>
-                <button onClick={() => this.handleValue(25)}>+25</button>
-                <button onClick={() => this.handleValue(10)}>+10</button>
-                <button onClick={() => this.handleValue(-10)}>-10</button>
+                Limit is {limitReceived}
+                <ProgressBar bars={bars} />
+                <Form handleSelect={this.handleSelect} buttons={buttons} handleValue={this.handleValue} />
             </div>
         )
     }

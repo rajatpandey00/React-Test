@@ -12,7 +12,14 @@ module.exports = {
       loader: 'babel-loader',
       test: /\.js$/,
       exclude: /node_modules/
+    }, {
+        use: ['style-loader', 'css-loader'], //use is for adding array of loaders
+        test: /\.scss$/,
     }]
   },
+  devServer: {
+    contentBase: path.join(__dirname, 'public/')
+  },
+  devtool: 'cheap-module-eval-source-map', //For Debugging purpose
   mode: 'development'
 }
